@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Interface</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+        }
+        .tab {
+            cursor: pointer;
+            padding: 10px 20px;
+        }
+        .tab:hover {
+            background-color: #575757;
+        }
+        .active-tab {
+            background-color: #444;
+        }
+        .content {
+            display: none;
+            height: calc(100% - 60px);
+            position: relative; /* Ensure correct positioning for the map */
+        }
+        .active-content {
+            display: block;
+        }
+        #map-patient, #map-driver {
+            height: 100%;
+            width: 100%;
+            display: none; /* Hide map initially */
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #27ae60;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #218c54;
+        }
+        .container {
+            padding: 20px;
+        }
+        .sos-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .sos-button .button {
+            background-color: #e74c3c;
+        }
+        .sos-button .button:hover {
+            background-color: #c0392b;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .login-box {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background-color: #fff;
+        }
+        .login-box h2 {
+            margin-bottom: 20px;
+        }
+        .leaflet-routing-container {
+            width: 250px !important;
+            height: auto !important; /* Adjust height to fit content */
+            max-height: 300px; /* Set a maximum height */
+            font-size: 12px !important;
+            overflow-y: auto; /* Allow vertical scroll if needed */
+            border: 1px solid #ddd; /* Border for neatness */
+            background: #fff; /* Background color for clarity */
+            border-radius: 5px; /* Rounded corners */
+        }
+        .leaflet-routing-container .leaflet-routing-alt {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .leaflet-routing-container .leaflet-routing-waypoint,
+        .leaflet-routing-container .leaflet-routing-plan,
+        .leaflet-routing-container .leaflet-routing-error,
+        .leaflet-routing-container .leaflet-routing-messages {
+            display: none;
+        }
+        /* Legend styles */
+        .legend {
+            background: white;
+            padding: 6px 8px;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            line-height: 18px;
+            color: #555;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        .legend div {
+            margin-bottom: 5px;
+        }
+        .legend .color-box {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tabs">
+        <div class="tab active-tab" onclick="switchTab('patient')">Patient POV</div>
+        <div class="tab" onclick="switchTab('driver')">Driver POV</div>
+        <div class="tab" onclick="switchTab('paramedic')">Paramedic POV</div>
+    </div>
+
+    <!-- Patient POV Content -->
+    <div id="patient" class="content active-content">
+        <div class="sos-button">
+            <button class="button" onclick="triggerSOS()">Emergency SOS</button>
+        </div>
+        <div id="map-patient"></div>
+        <div id="eta-container">
+            <p>Ambulance is on the way. Estimated Time of Arrival: <span id="eta">15</span> minutes.</p>
+        </div>
+    </div>
+
+    <!-- Driver POV Content -->
+    <div id="driver" class="content">
+        <div id="driver-login" class="login-container">
+            <div class="login-box">
+                <h2>Driver Login</h2>
+                <div class="form-group">
+                    <label for="driver-username">Username:</label>
+                    <input type="text" id="driver-username">
+                </div>
+                <div class="form-group">
+                    <label for="driver-password">Password:</label>
+                    <input type="password" id="driver-password">
+                </div>
+                <button class="button" onclick="loginDriver()">Login</button>
+                <p id="driver-login-status"></p>
+            </div>
+        </div>
+        <div id="map-driver"></div>
+    </div>
+
+    <!-- Paramedic POV Content -->
+<div id="paramedic" class="content">
+    <div id="paramedic-login" class="login-container">
+        <div class="login-box">
+            <h2>Paramedic Login</h2>
+            <div class="form-group">
+                <label for="paramedic-username">Username:</label>
+                <input type="text" id="paramedic-username">
+            </div>
+            <div class="form-group">
+                <label for="paramedic-password">Password:</label>
+                <input type="password" id="paramedic-password">
+            </div>
+            <button class="button" onclick="loginParamedic()">Login</button>
+            <p id="paramedic-login-status"></p>
+        </div>
+    </div>
+    <div id="paramedic-content" class="container" style="display: none;">
+        <h1>Update Patient Data</h1>
+        <div class="form-group">
+            <label for="temperature">Temperature (°C):</label>
+            <input type="text" id="temperature" name="temperature">
+        </div>
+        <div class="form-group">
+            <label for="blood-group">Blood Group:</label>
+            <input type="text" id="blood-group" name="blood-group">
+        </div>
+        <div class="form-group">
+            <label for="ecg-report">Upload ECG Report (Photo/PDF):</label>
+            <input type="file" id="ecg-report" name="ecg-report" accept=".jpg,.jpeg,.png,.pdf">
+        </div>
+
+        <!-- New fields for the paramedic view -->
+        <div class="form-group">
+            <label for="pulse-rate">Pulse Rate (bpm):</label>
+            <input type="text" id="pulse-rate" name="pulse-rate">
+        </div>
+        <div class="form-group">
+            <label for="blood-pressure">Blood Pressure (mm Hg):</label>
+            <input type="text" id="blood-pressure" name="blood-pressure">
+        </div>
+        <div class="form-group">
+            <label for="oxygen-saturation">Oxygen Saturation (SpO2) (%):</label>
+            <input type="text" id="oxygen-saturation" name="oxygen-saturation">
+        </div>
+        <div class="form-group">
+            <label for="respiratory-rate">Respiratory Rate (breaths per minute):</label>
+            <input type="text" id="respiratory-rate" name="respiratory-rate">
+        </div>
+        <div class="form-group">
+            <label for="blood-glucose">Blood Glucose Level (mg/dL):</label>
+            <input type="text" id="blood-glucose" name="blood-glucose">
+        </div>
+        <div class="form-group">
+            <label for="current-symptoms">Current Symptoms:</label>
+            <textarea id="current-symptoms" name="current-symptoms"></textarea>
+        </div>
+
+        <button class="button" onclick="uploadData()">Upload Data</button>
+        <p id="status"></p>
+    </div>
+</div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.content').forEach(tab => tab.classList.remove('active-content'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active-tab'));
+            document.getElementById(tabId).classList.add('active-content');
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active-tab');
+
+            // Ensure map resizing and proper display
+            if (tabId === 'driver' && mapDriver) {
+                setTimeout(() => {
+                    mapDriver.invalidateSize();
+                }, 100);
+            } else if (tabId === 'patient' && mapPatient) {
+                setTimeout(() => {
+                    mapPatient.invalidateSize();
+                }, 100);
+            }
+        }
+
+        // Coordinates for demo
+        const patientLocation = [22.72636650726409, 75.87413349258097];
+        const ambulanceLocation = [22.70794010120601, 75.87550426909773];
+        const hospitalLocation = [22.692297486017775, 75.89779834251024];
+
+        let mapPatient, mapDriver;
+
+        function triggerSOS() {
+            document.querySelector('.sos-button').style.display = 'none';
+            document.getElementById('map-patient').style.display = 'block';
+            document.getElementById('eta-container').style.display = 'block';
+
+            mapPatient = L.map('map-patient').setView(patientLocation, 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapPatient);
+            
+            // Add colored markers
+            L.circleMarker(patientLocation, { color: 'blue', radius: 8 }).addTo(mapPatient).bindPopup('Patient Location').openPopup();
+            L.circleMarker(ambulanceLocation, { color: 'red', radius: 8 }).addTo(mapPatient).bindPopup('Ambulance Location');
+            L.circleMarker(hospitalLocation, { color: 'green', radius: 8 }).addTo(mapPatient).bindPopup('Hospital Location');
+
+            // Add routing control
+            L.Routing.control({
+                waypoints: [L.latLng(ambulanceLocation), L.latLng(patientLocation), L.latLng(hospitalLocation)],
+                routeWhileDragging: true
+            }).addTo(mapPatient);
+
+            // Add legend
+            L.control({ position: 'bottomright' }).onAdd = function () {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML = `
+                    <div><span class="color-box" style="background: blue;"></span>Patient Location</div>
+                    <div><span class="color-box" style="background: red;"></span>Ambulance Location</div>
+                    <div><span class="color-box" style="background: green;"></span>Hospital Location</div>
+                `;
+                return div;
+            }.addTo(mapPatient);
+        }
+
+        function initializeDriverMap() {
+            mapDriver = L.map('map-driver').setView(patientLocation, 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapDriver);
+
+            L.Routing.control({
+                waypoints: [L.latLng(ambulanceLocation), L.latLng(patientLocation), L.latLng(hospitalLocation)],
+                routeWhileDragging: true
+            }).addTo(mapDriver);
+        }
+
+        function loginDriver() {
+            const username = document.getElementById('driver-username').value;
+            const password = document.getElementById('driver-password').value;
+            const status = document.getElementById('driver-login-status');
+
+            if (username === 'driver' && password === 'driverpass') {
+                document.getElementById('driver-login').style.display = 'none';
+                document.getElementById('map-driver').style.display = 'block'; // Show map only after login
+                initializeDriverMap();
+                status.innerText = '';
+            } else {
+                status.innerText = 'Invalid username or password';
+            }
+        }
+
+        function loginParamedic() {
+            const username = document.getElementById('paramedic-username').value;
+            const password = document.getElementById('paramedic-password').value;
+            const status = document.getElementById('paramedic-login-status');
+
+            if (username === 'paramedic' && password === 'paramedicpass') {
+                document.getElementById('paramedic-login').style.display = 'none';
+                document.getElementById('paramedic-content').style.display = 'block';
+                status.innerText = '';
+            } else {
+                status.innerText = 'Invalid username or password';
+            }
+        }
+
+        function uploadData() {
+            const status = document.getElementById('status');
+            status.innerText = "Uploading...";
+            setTimeout(() => {
+                status.innerText = "Data uploaded successfully!";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
