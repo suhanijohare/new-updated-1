@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h2>Dashboard</h2>
+    <ul>
+        <li><a href="{% url 'register_driver' %}">Register Driver</a></li>
+        <li><a href="{% url 'register_paramedic' %}">Register Paramedic</a></li>
+        <li><a href="{% url 'register_ambulance' %}">Register Ambulance</a></li>
+        <li><a href="{% url 'view_drivers' %}">View Drivers</a></li>
+        <li><a href="{% url 'view_paramedics' %}">View Paramedics</a></li>
+        <li><a href="{% url 'view_ambulances' %}">View Ambulances</a></li>
+    </ul>
+</div>
+</body>
+</html>

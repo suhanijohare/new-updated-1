@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        <a href="registration.htm">master </a>
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #e0e4e8;
+            border-radius: 8px;
+            margin: 0 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+        }
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Ambulance Driver/Paramedic Registration</h2>
+
+    <div class="tabs">
+        <div class="tab active" id="driver-tab" onclick="showForm('driver')">Driver Registration</div>
+        <div class="tab" id="paramedic-tab" onclick="showForm('paramedic')">Paramedic Registration</div>
+    </div>
+
+    <!-- Driver Registration Form -->
+    <div id="driver-form" class="form-section active">
+        <div class="form-group">
+            <label for="driver-name">Name:</label>
+            <input type="text" id="driver-name" required>
+        </div>
+        <div class="form-group">
+            <label for="driver-age">Age:</label>
+            <input type="number" id="driver-age" required>
+        </div>
+        <div class="form-group">
+            <label for="driver-gender">Gender:</label>
+            <input type="text" id="driver-gender" required>
+        </div>
+        <div class="form-group">
+            <label for="driver-hospital">Hospital:</label>
+            <input type="text" id="driver-hospital" required>
+        </div>
+        <div class="form-group">
+            <label for="driver-hospital-code">Hospital Unique Code:</label>
+            <input type="text" id="driver-hospital-code" required>
+        </div>
+        <div class="form-group">
+            <label for="driver-user-id">User ID:</label>
+            <input type="text" id="driver-user-id" required>
+        </div>
+        <div class="form-group">
+            <label for="driver-password">Password:</label>
+            <input type="password" id="driver-password" required>
+        </div>
+        <button class="button" onclick="registerUser('driver')">Register as Driver</button>
+    </div>
+
+    <!-- Paramedic Registration Form -->
+    <div id="paramedic-form" class="form-section">
+        <div class="form-group">
+            <label for="paramedic-name">Name:</label>
+            <input type="text" id="paramedic-name" required>
+        </div>
+        <div class="form-group">
+            <label for="paramedic-age">Age:</label>
+            <input type="number" id="paramedic-age" required>
+        </div>
+        <div class="form-group">
+            <label for="paramedic-gender">Gender:</label>
+            <input type="text" id="paramedic-gender" required>
+        </div>
+        <div class="form-group">
+            <label for="paramedic-hospital">Hospital:</label>
+            <input type="text" id="paramedic-hospital" required>
+        </div>
+        <div class="form-group">
+            <label for="paramedic-hospital-code">Hospital Unique Code:</label>
+            <input type="text" id="paramedic-hospital-code" required>
+        </div>
+        <div class="form-group">
+            <label for="paramedic-user-id">User ID:</label>
+            <input type="text" id="paramedic-user-id" required>
+        </div>
+        <div class="form-group">
+            <label for="paramedic-password">Password:</label>
+            <input type="password" id="paramedic-password" required>
+        </div>
+        <button class="button" onclick="registerUser('paramedic')">Register as Paramedic</button>
+    </div>
+</div>
+
+<script>
+    function showForm(formType) {
+        // Toggle active class on tabs
+        document.getElementById('driver-tab').classList.remove('active');
+        document.getElementById('paramedic-tab').classList.remove('active');
+        
+        // Toggle active class on forms
+        document.getElementById('driver-form').classList.remove('active');
+        document.getElementById('paramedic-form').classList.remove('active');
+
+        // Show the selected form and highlight the correct tab
+        if (formType === 'driver') {
+            document.getElementById('driver-tab').classList.add('active');
+            document.getElementById('driver-form').classList.add('active');
+        } else {
+            document.getElementById('paramedic-tab').classList.add('active');
+            document.getElementById('paramedic-form').classList.add('active');
+        }
+    }
+
+    function registerUser(role) {
+        let name, age, gender, hospital, hospitalCode, userId, password;
+
+        if (role === 'driver') {
+            name = document.getElementById('driver-name').value;
+            age = document.getElementById('driver-age').value;
+            gender = document.getElementById('driver-gender').value;
+            hospital = document.getElementById('driver-hospital').value;
+            hospitalCode = document.getElementById('driver-hospital-code').value;
+            userId = document.getElementById('driver-user-id').value;
+            password = document.getElementById('driver-password').value;
+        } else {
+            name = document.getElementById('paramedic-name').value;
+            age = document.getElementById('paramedic-age').value;
+            gender = document.getElementById('paramedic-gender').value;
+            hospital = document.getElementById('paramedic-hospital').value;
+            hospitalCode = document.getElementById('paramedic-hospital-code').value;
+            userId = document.getElementById('paramedic-user-id').value;
+            password = document.getElementById('paramedic-password').value;
+        }
+
+        // Create an object for the user data
+        const user = {
+            name,
+            age,
+            gender,
+            hospital,
+            hospitalCode,
+            userId,
+            password,
+            role
+        };
+
+        // Retrieve existing users from localStorage or create an empty array if none exist
+        const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
+
+        // Add the new user to the existing users
+        existingUsers.push(user);
+
+        // Save the updated users list to localStorage
+        localStorage.setItem('users', JSON.stringify(existingUsers));
+
+        alert("Registration successful as " + role + "!");
+    }
+</script>
+
+</body>
+</html>

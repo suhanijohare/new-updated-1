@@ -1,0 +1,22 @@
+<table>
+    <tr>
+        <th>Login ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Mobile Number</th>
+        <th>License Number</th>
+        <th>Specialization</th>
+    </tr>
+    {% for paramedic in paramedics %}
+    <tr>
+        <td>{{ paramedic.login_id }}</td>
+        <td>{{ paramedic.name }}</td>
+        <td>{{ paramedic.age }}</td>
+        <td>{{ paramedic.gender }}</td>
+        <td>{{ paramedic.mobile_number }}</td>
+        <td>{{ paramedic.license_number }}</td>
+        <td>{{ paramedic.specialization }}</td>
+    </tr>
+    {% endfor %}
+</table>

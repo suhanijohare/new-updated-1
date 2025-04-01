@@ -1,0 +1,16 @@
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>License Number</th>
+        <th>Vehicle Type</th>
+    </tr>
+    {% for driver in drivers %}
+    <tr>
+        <td>{{ driver.name }}</td>
+        <td>{{ driver.age }}</td>
+        <td>{{ driver.license_number }}</td>
+        <td>{{ driver.vehicle_type }}</td>
+    </tr>
+    {% endfor %}
+</table>
